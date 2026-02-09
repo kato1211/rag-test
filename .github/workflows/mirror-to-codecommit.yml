@@ -39,6 +39,6 @@ jobs:
           ACCOUNT_ID: 392976832481
           CC_REPO: rag-test-mirror
         run: |
-          CC_URL="codecommit::$AWS_REGION://$ACCOUNT_ID/$CC_REPO"
+          CC_URL="https://git-codecommit.$AWS_REGION.amazonaws.com/v1/repos/$CC_REPO"
           git remote add mirror "$CC_URL" || git remote set-url mirror "$CC_URL"
           git push --prune --mirror mirror
