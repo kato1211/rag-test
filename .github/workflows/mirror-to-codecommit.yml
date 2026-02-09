@@ -24,8 +24,8 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
-          aws-region: <REGION>
+          role-to-assume: arn:aws:iam::392976832481:role/rag-git-test
+          aws-region: ap-northeast-1
 
       - name: Install git-remote-codecommit helper
         run: |
@@ -35,8 +35,8 @@ jobs:
 
       - name: Add CodeCommit remote and mirror-push
         env:
-          AWS_REGION: <REGION>
-          ACCOUNT_ID: <ACCOUNT_ID>
+          AWS_REGION: ap-northeast-1
+          ACCOUNT_ID: 392976832481
           CC_REPO: rag-test-mirror
         run: |
           CC_URL="codecommit::$AWS_REGION://$ACCOUNT_ID/$CC_REPO"
