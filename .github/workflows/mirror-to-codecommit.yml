@@ -1,0 +1,44 @@
+# .github/workflows/mirror-to-codecommit.yml
+name: Mirror to AWS CodeCommit
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 * * * *" # 毎時。適宜変更
+  push:
+    branches:
+      - "**"            # 任意。pushイベントで同期したい場合
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout GitHub repo (kato1211/rag-test)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 全履歴ミラー
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::<ACCOUNT_ID>:role/<ROLE_NAME>
+          aws-region: <REGION>
+
+      - name: Install git-remote-codecommit helper
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git python3-pip
+          pip3 install git-remote-codecommit
+
+      - name: Add CodeCommit remote and mirror-push
+        env:
+          AWS_REGION: <REGION>
+          ACCOUNT_ID: <ACCOUNT_ID>
+          CC_REPO: rag-test-mirror
+        run: |
+          CC_URL="codecommit::$AWS_REGION://$ACCOUNT_ID/$CC_REPO"
+          git remote add mirror "$CC_URL" || git remote set-url mirror "$CC_URL"
+          git push --prune --mirror mirror
